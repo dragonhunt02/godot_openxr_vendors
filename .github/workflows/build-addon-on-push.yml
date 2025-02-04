@@ -202,14 +202,24 @@ jobs:
         run: |
           zip -qq -r godotopenxrvendorsaddon.zip asset
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-      - name: Create and upload asset
-        uses: ncipollo/release-action@v1
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          allowUpdates: true
-          artifacts: "godotopenxrvendorsaddon.zip"
-          draft: true
-          omitNameDuringUpdate: true
-          omitBodyDuringUpdate: true
-          omitDraftDuringUpdate: true
-          omitPrereleaseDuringUpdate: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: XR-plugin-${{ github.run_number }}
+          release_name: Latest Release of V-Sekai XR plugin
+          draft: false
+          prerelease: true
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./godotopenxrvendorsaddon.zip
+          asset_name: godotopenxrvendorsaddon.zip
+          asset_content_type: application/zip
