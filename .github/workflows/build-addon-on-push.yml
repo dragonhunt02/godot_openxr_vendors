@@ -6,7 +6,6 @@ on: [push, pull_request]
 env:
   # Only used for the cache key. Increment version to force clean build.
   GODOT_BASE_BRANCH: master
-  SCONS_CACHE: ${{ github.workspace }}/.scons-cache/
 
 jobs:
   build:
@@ -77,11 +76,6 @@ jobs:
         with:
           path: aar
           submodules: recursive
-      - name: Restore Godot build cache
-        uses: ./aar/thirdparty/godot-cpp/.github/actions/godot-cache-restore
-        with:
-          cache-name: ${{ matrix.cache-name }}
-        continue-on-error: true
       - name: Set up Python (for SCons)
         uses: actions/setup-python@v5
         with:
@@ -110,11 +104,6 @@ jobs:
           scons platform=${{ matrix.platform }} target=template_debug ${{ matrix.flags }} custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json build_profile=thirdparty/godot_cpp_build_profile/build_profile.json
           scons platform=${{ matrix.platform }} target=template_release ${{ matrix.flags }} custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json build_profile=thirdparty/godot_cpp_build_profile/build_profile.json
           cd ..
-      - name: Save Godot build cache
-        uses: ./aar/thirdparty/godot-cpp/.github/actions/godot-cache-save
-        with:
-          cache-name: ${{ matrix.cache-name }}
-        continue-on-error: true
       - name: Upload build files (artifacts)
         uses: actions/upload-artifact@v4
         with:
