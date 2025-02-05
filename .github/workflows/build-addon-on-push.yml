@@ -107,6 +107,7 @@ jobs:
           yes 2>/dev/null | ./cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} "ndk;23.2.8568313" 'cmdline-tools;latest' 'build-tools;34.0.0' 'platforms;android-34' 'cmake;3.22.1'
   
       - name: Dump Godot API file
+        if: matrix.platform == 'tttt'
         run: |
           curl -OL https://github.com/V-Sekai/world-godot/releases/download/latest.v-sekai-editor-167/v-sekai-godot-linuxbsd.zip
           unzip v-sekai-godot-linuxbsd.zip
