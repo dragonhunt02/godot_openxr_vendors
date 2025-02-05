@@ -1,5 +1,5 @@
 # Godot OpenXR Vendors plugin
-
+ 
 This plugin provides the functionality to support vendor-specific XR
 devices (e.g: Meta, Pico devices) and access vendor-specific OpenXR extensions
 
