@@ -132,9 +132,15 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: List
+        if: matrix.platform != 'windows'
         run: |
           ls -R
           mv -v -f ./godot-api-file/extension_api.json aar/thirdparty/godot_cpp_gdextension_api/extension_api.json
+      - name: List win
+        if: matrix.platform == 'windows'
+        run: |
+          ls -R
+          mv -v -Force ./godot-api-file/extension_api.json aar/thirdparty/godot_cpp_gdextension_api/extension_api.json
 
       - name: Create extension library
         run: |
