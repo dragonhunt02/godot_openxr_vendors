@@ -99,7 +99,8 @@ jobs:
           #cd world-godot
           #just setup-android-sdk
           #cd ..
-          export ANDROID_SDK_ROOT=$( pwd )/androidsdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk/
+          #$( pwd )/androidsdk
           curl -sS -OL 'https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip'
           unzip commandlinetools-linux-11076708_latest.zip
           mkdir -p ${ANDROID_SDK_ROOT}
