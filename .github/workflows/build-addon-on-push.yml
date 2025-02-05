@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - name: 🐧 Linux (x86_64, GCC)
-            os: ubuntu-20.04
+            os: ubuntu-24.04
             platform: linux
             flags: arch=x86_64
             artifact_name: build-files-linux-x86_64
@@ -51,7 +51,7 @@ jobs:
             artifact_path: aar/demo/addons/godotopenxrvendors/.bin/macos/*/*.framework
             cache-name: macos-universal
           - name: 🤖 Android (arm64)
-            os: ubuntu-20.04
+            os: ubuntu-24.04
             platform: android
             flags: arch=arm64
             artifact_name: build-files-android-arm64
@@ -59,7 +59,7 @@ jobs:
               aar/plugin/src/main/libs/*/*/*/*.so
             cache-name: android-arm64
           - name: 🤖 Android (x86_64)
-            os: ubuntu-20.04
+            os: ubuntu-24.04
             platform: android
             flags: arch=x86_64
             artifact_name: build-files-android-x86_64
@@ -80,16 +80,23 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - name: Android dependencies
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r23c
-          link-to-sdk: true
-        if: matrix.platform == 'android'
+     # - name: Android dependencies
+    #    uses: nttld/setup-ndk@v1
+   #     with:
+    #      ndk-version: r23c
+    #      link-to-sdk: true
+   #     if: matrix.platform == 'android'
       - name: Install scons
         run: |
           python -m pip install scons==4.0.0
 
+      - name: Install ndk
+        if: matrix.platform == 'android'
+        run: |
+          sudo apt install -y just
+          git clone --depth 1 https://github.com/V-Sekai/world-godot.git
+          just setup-android-sdk
+  
       - name: Dump Godot API file
         run: |
           curl -OL https://github.com/V-Sekai/world-godot/releases/download/latest.v-sekai-editor-167/v-sekai-godot-linuxbsd.zip
@@ -117,6 +124,9 @@ jobs:
     needs: build
 
     steps:
+      - name: exit
+        run: |
+          exit 1
       - name: Checkout
         uses: actions/checkout@v4
         with:
