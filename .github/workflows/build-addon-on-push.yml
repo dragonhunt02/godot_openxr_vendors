@@ -113,7 +113,7 @@ jobs:
           curl -OL https://github.com/V-Sekai/world-godot/releases/download/latest.v-sekai-editor-167/v-sekai-godot-linuxbsd.zip
           unzip v-sekai-godot-linuxbsd.zip
           chmod +x ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64
-          ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64 --dump-extension-api
+          ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64 --headless --dump-extension-api
           mv -f ./extension_api.json thirdparty/godot_cpp_gdextension_api/extension_api.json
 
       - name: Create extension library
