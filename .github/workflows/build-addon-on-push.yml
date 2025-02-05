@@ -95,7 +95,9 @@ jobs:
         run: |
           sudo apt install -y just
           git clone --depth 1 https://github.com/V-Sekai/world-godot.git
+          cd world-godot
           just setup-android-sdk
+          cd ..
   
       - name: Dump Godot API file
         run: |
