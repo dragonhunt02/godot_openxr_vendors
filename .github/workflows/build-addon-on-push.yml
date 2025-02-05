@@ -114,7 +114,7 @@ jobs:
           unzip v-sekai-godot-linuxbsd.zip
           chmod +x ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64
           ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64 --headless --dump-extension-api
-          mv -f ./extension_api.json thirdparty/godot_cpp_gdextension_api/extension_api.json
+          mv -f ./extension_api.json godot_openxr_vendors/thirdparty/godot_cpp_gdextension_api/extension_api.json
 
       - name: Create extension library
         run: |
