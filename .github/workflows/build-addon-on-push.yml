@@ -145,8 +145,8 @@ jobs:
       - name: Create extension library
         run: |
           cd aar
-          scons platform=${{ matrix.platform }} target=template_debug ${{ matrix.flags }} custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json build_profile=thirdparty/godot_cpp_build_profile/build_profile.json
-          scons platform=${{ matrix.platform }} target=template_release ${{ matrix.flags }} custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json build_profile=thirdparty/godot_cpp_build_profile/build_profile.json
+          scons platform=${{ matrix.platform }} target=template_debug precision=double ${{ matrix.flags }} custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json build_profile=thirdparty/godot_cpp_build_profile/build_profile.json
+          scons platform=${{ matrix.platform }} target=template_release precision=double ${{ matrix.flags }} custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json build_profile=thirdparty/godot_cpp_build_profile/build_profile.json
           cd ..
       - name: Upload build files (artifacts)
         uses: actions/upload-artifact@v4
