@@ -93,8 +93,9 @@ jobs:
       - name: Install ndk
         if: matrix.platform == 'android'
         run: |
-          sudo apt install -y just openjdk-17-jdk
-          git clone --depth 1 https://github.com/V-Sekai/world-godot.git
+          sudo apt install -y just 
+          # openjdk-17-jdk
+          # git clone --depth 1 https://github.com/V-Sekai/world-godot.git
           cd world-godot
           #just setup-android-sdk
           cd ..
@@ -103,8 +104,7 @@ jobs:
           unzip commandlinetools-linux-11076708_latest.zip
           mkdir -p ${ANDROID_SDK_ROOT}
           yes | ./cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} --licenses
-          yes | ./cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} "ndk;23.2.8568313" 'cmdline-tools;latest' 'build-tools;34.0.0' 'platforms;android-34' 'cmake;3.22.1'
-
+          yes 2>/dev/null | ./cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} "ndk;23.2.8568313" 'cmdline-tools;latest' 'build-tools;34.0.0' 'platforms;android-34' 'cmake;3.22.1'
   
       - name: Dump Godot API file
         run: |
