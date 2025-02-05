@@ -19,6 +19,7 @@ jobs:
           unzip v-sekai-godot-linuxbsd.zip
           chmod +x ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64
           ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64 --headless --dump-extension-api
+          ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64 --headless --dump-gdextension-interface
           # mv -v -f ./extension_api.json aar/thirdparty/godot_cpp_gdextension_api/extension_api.json
 
       - name: Upload build files (artifacts)
@@ -27,6 +28,7 @@ jobs:
           name: godot-api-file
           path: |
             ./extension_api.json
+            ./gdextension_interface.h
 
   build:
     name: Building for ${{ matrix.name }} (${{ matrix.os }})
@@ -136,11 +138,13 @@ jobs:
         run: |
           ls -R
           mv -v -f ./godot-api-file/extension_api.json aar/thirdparty/godot_cpp_gdextension_api/extension_api.json
+          mv -v -f ./godot-api-file/gdextension_interface.h aar/thirdparty/godot_cpp/gdextension/gdextension_interface.h
       - name: List win
         if: matrix.platform == 'windows'
         run: |
           ls -R
           mv -v -Force ./godot-api-file/extension_api.json aar/thirdparty/godot_cpp_gdextension_api/extension_api.json
+          mv -v -Force ./godot-api-file/gdextension_interface.h aar/thirdparty/godot_cpp/gdextension/gdextension_interface.h
 
       - name: Create extension library
         run: |
