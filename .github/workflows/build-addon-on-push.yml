@@ -64,13 +64,13 @@ jobs:
             artifact_name: build-files-windows
             artifact_path: aar/demo/addons/godotopenxrvendors/.bin/windows/*/*/*.dll
             cache-name: windows-x86_64-msvc
-          - name: 🍎 MacOS (universal)
-            os: macos-latest
-            platform: macos
-            flags: arch=universal
-            artifact_name: build-files-macos
-            artifact_path: aar/demo/addons/godotopenxrvendors/.bin/macos/*/*.framework
-            cache-name: macos-universal
+          #- name: 🍎 MacOS (universal)
+          #  os: macos-latest
+          #  platform: macos
+          #  flags: arch=universal
+         #   artifact_name: build-files-macos
+          #  artifact_path: aar/demo/addons/godotopenxrvendors/.bin/macos/*/*.framework
+          #  cache-name: macos-universal
           - name: 🤖 Android (arm64)
             os: ubuntu-24.04
             platform: android
