@@ -94,19 +94,19 @@ task buildSconsArtifacts {
         // Build the GDExtension library for Android.
         tasks.create(name: "buildGodotOpenXRVendorsAndroidArm64Debug", type: Exec) {
             executable sconsExecutableFile.absolutePath
-            args "--directory=.", "platform=android", "target=template_debug", "arch=arm64", "precision=double", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
+            args "--directory=.", "platform=android", "target=template_debug", "arch=arm64", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
         }
         tasks.create(name: "buildGodotOpenXRVendorsAndroidArm64Release", type: Exec) {
             executable sconsExecutableFile.absolutePath
-            args "--directory=.", "platform=android", "target=template_release", "arch=arm64", "precision=double", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
+            args "--directory=.", "platform=android", "target=template_release", "arch=arm64", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
         }
         tasks.create(name: "buildGodotOpenXRVendorsAndroidX86_64Debug", type: Exec) {
             executable sconsExecutableFile.absolutePath
-            args "--directory=.", "platform=android", "target=template_debug", "arch=x86_64", "precision=double", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
+            args "--directory=.", "platform=android", "target=template_debug", "arch=x86_64", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
         }
         tasks.create(name: "buildGodotOpenXRVendorsAndroidX86_64Release", type: Exec) {
             executable sconsExecutableFile.absolutePath
-            args "--directory=.", "platform=android", "target=template_release", "arch=x86_64", "precision=double", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
+            args "--directory=.", "platform=android", "target=template_release", "arch=x86_64", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
         }
 
         dependsOn 'buildGodotOpenXRVendorsAndroidArm64Debug'
@@ -117,11 +117,11 @@ task buildSconsArtifacts {
         // Build the GDExtension library for desktop.
         tasks.create(name: "buildGodotOpenXRVendorsDesktopDebug", type: Exec) {
             executable sconsExecutableFile.absolutePath
-            args "--directory=.", "target=template_debug", "precision=double", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
+            args "--directory=.", "target=template_debug", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
         }
         tasks.create(name: "buildGodotOpenXRVendorsDesktopRelease", type: Exec) {
             executable sconsExecutableFile.absolutePath
-            args "--directory=.", "target=template_release", "precision=double", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
+            args "--directory=.", "target=template_release", "custom_api_file=thirdparty/godot_cpp_gdextension_api/extension_api.json", "build_profile=thirdparty/godot_cpp_build_profile/build_profile.json"
         }
 
         dependsOn 'buildGodotOpenXRVendorsDesktopDebug'
