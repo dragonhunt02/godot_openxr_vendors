@@ -115,7 +115,7 @@ jobs:
       - name: Install ndk
         if: matrix.platform == 'android'
         run: |
-          sudo apt install -y just
+          #sudo apt install -y just
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk/
           curl -sS -OL 'https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip'
           unzip commandlinetools-linux-11076708_latest.zip
