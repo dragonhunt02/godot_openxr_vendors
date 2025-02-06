@@ -424,104 +424,134 @@ void OpenXRFbPassthroughExtensionWrapper::stop_passthrough() {
 }
 
 XrGeometryInstanceFB OpenXRFbPassthroughExtensionWrapper::create_geometry_instance(const Ref<Mesh> &p_mesh, const Transform3D &p_transform) {
-	ERR_FAIL_COND_V(p_mesh.is_null(), XR_NULL_HANDLE);
+    ERR_FAIL_COND_V(p_mesh.is_null(), XR_NULL_HANDLE);
 
-	if (!is_passthrough_started()) {
-		UtilityFunctions::print("Tried to create geometry instance, but passthrough isn't started!");
-		return XR_NULL_HANDLE;
-	}
+    if (!is_passthrough_started()) {
+        UtilityFunctions::print("Tried to create geometry instance, but passthrough isn't started!");
+        return XR_NULL_HANDLE;
+    }
 
-	Array surface_arrays = p_mesh->surface_get_arrays(0);
+    Array surface_arrays = p_mesh->surface_get_arrays(0);
 
-	Array vertex_array = surface_arrays[Mesh::ARRAY_VERTEX];
-	LocalVector<XrVector3f> vertices;
-	vertices.resize(vertex_array.size());
-	for (int j = 0; j < vertex_array.size(); j++) {
-		Vector3 vertex = vertex_array[j];
-		vertices[j] = { vertex.x, vertex.y, vertex.z };
-	}
+    Array vertex_array = surface_arrays[Mesh::ARRAY_VERTEX];
+    LocalVector<XrVector3f> vertices;
+    vertices.resize(vertex_array.size());
+    for (int j = 0; j < vertex_array.size(); j++) {
+        Vector3 vertex = vertex_array[j];
+        vertices[j] = { 
+            static_cast<float>(vertex.x), 
+            static_cast<float>(vertex.y), 
+            static_cast<float>(vertex.z) 
+        };
+    }
 
-	Array index_array = surface_arrays[Mesh::ARRAY_INDEX];
-	LocalVector<uint32_t> indices;
-	indices.resize(index_array.size());
-	for (int j = 0; j < index_array.size(); j++) {
-		indices[j] = index_array[j];
-	}
+    Array index_array = surface_arrays[Mesh::ARRAY_INDEX];
+    LocalVector<uint32_t> indices;
+    indices.resize(index_array.size());
+    for (int j = 0; j < index_array.size(); j++) {
+        indices[j] = index_array[j];
+    }
 
-	XrTriangleMeshFB mesh = XR_NULL_HANDLE;
-	XrTriangleMeshCreateInfoFB triangle_mesh_info = {
-		XR_TYPE_TRIANGLE_MESH_CREATE_INFO_FB, // type
-		nullptr, // next
-		0, // flags
-		XR_WINDING_ORDER_CW_FB, // windingOrder
-		(uint32_t)vertex_array.size(), // vertexCount
-		vertices.ptr(), // vertexBuffer
-		(uint32_t)index_array.size(), // triangleCount
-		indices.ptr(), // indexBuffer
-	};
+    XrTriangleMeshFB mesh = XR_NULL_HANDLE;
+    XrTriangleMeshCreateInfoFB triangle_mesh_info = {
+        XR_TYPE_TRIANGLE_MESH_CREATE_INFO_FB, // type
+        nullptr, // next
+        0, // flags
+        XR_WINDING_ORDER_CW_FB, // windingOrder
+        static_cast<uint32_t>(vertex_array.size()), // vertexCount
+        vertices.ptr(), // vertexBuffer
+        static_cast<uint32_t>(index_array.size()), // triangleCount
+        indices.ptr(), // indexBuffer
+    };
 
-	XrResult result = xrCreateTriangleMeshFB(SESSION, &triangle_mesh_info, &mesh);
-	if (XR_FAILED(result)) {
-		UtilityFunctions::print("Failed to create triangle mesh, error code: ", result);
-		return XR_NULL_HANDLE;
-	}
+    XrResult result = xrCreateTriangleMeshFB(SESSION, &triangle_mesh_info, &mesh);
+    if (XR_FAILED(result)) {
+        UtilityFunctions::print("Failed to create triangle mesh, error code: ", result);
+        return XR_NULL_HANDLE;
+    }
 
-	Transform3D reference_frame = XRServer::get_singleton()->get_reference_frame();
-	Transform3D transform = reference_frame.inverse() * p_transform;
+    Transform3D reference_frame = XRServer::get_singleton()->get_reference_frame();
+    Transform3D transform = reference_frame.inverse() * p_transform;
 
-	Quaternion quat = transform.basis.get_rotation_quaternion();
-	Vector3 scale = transform.basis.get_scale();
+    Quaternion quat = transform.basis.get_rotation_quaternion();
+    Vector3 scale = transform.basis.get_scale();
 
-	XrQuaternionf xr_orientation = { quat.x, quat.y, quat.z, quat.w };
-	XrVector3f xr_position = { transform.origin.x, transform.origin.y, transform.origin.z };
-	XrPosef xr_pose = { xr_orientation, xr_position };
-	XrVector3f xr_scale = { scale.x, scale.y, scale.z };
+    XrQuaternionf xr_orientation = { 
+        static_cast<float>(quat.x), 
+        static_cast<float>(quat.y), 
+        static_cast<float>(quat.z), 
+        static_cast<float>(quat.w) 
+    };
+    XrVector3f xr_position = { 
+        static_cast<float>(transform.origin.x), 
+        static_cast<float>(transform.origin.y), 
+        static_cast<float>(transform.origin.z) 
+    };
+    XrPosef xr_pose = { xr_orientation, xr_position };
+    XrVector3f xr_scale = { 
+        static_cast<float>(scale.x), 
+        static_cast<float>(scale.y), 
+        static_cast<float>(scale.z) 
+    };
 
-	XrGeometryInstanceFB geometry_instance = XR_NULL_HANDLE;
-	XrGeometryInstanceCreateInfoFB geometry_instance_info = {
-		XR_TYPE_GEOMETRY_INSTANCE_CREATE_INFO_FB, // type
-		nullptr, // next
-		passthrough_layer[LAYER_PURPOSE_PROJECTED], // layer
-		mesh, // mesh
-		(XrSpace)get_openxr_api()->get_play_space(), // baseSpace
-		xr_pose, // pose
-		xr_scale, // scale
-	};
+    XrGeometryInstanceFB geometry_instance = XR_NULL_HANDLE;
+    XrGeometryInstanceCreateInfoFB geometry_instance_info = {
+        XR_TYPE_GEOMETRY_INSTANCE_CREATE_INFO_FB, // type
+        nullptr, // next
+        passthrough_layer[LAYER_PURPOSE_PROJECTED], // layer
+        mesh, // mesh
+        reinterpret_cast<XrSpace>(get_openxr_api()->get_play_space()), // baseSpace
+        xr_pose, // pose
+        xr_scale, // scale
+    };
 
-	result = xrCreateGeometryInstanceFB(SESSION, &geometry_instance_info, &geometry_instance);
-	if (XR_FAILED(result)) {
-		UtilityFunctions::print("Failed to create geometry instance, error code: ", result);
-		return XR_NULL_HANDLE;
-	}
+    result = xrCreateGeometryInstanceFB(SESSION, &geometry_instance_info, &geometry_instance);
+    if (XR_FAILED(result)) {
+        UtilityFunctions::print("Failed to create geometry instance, error code: ", result);
+        return XR_NULL_HANDLE;
+    }
 
-	return geometry_instance;
+    return geometry_instance;
 }
 
 void OpenXRFbPassthroughExtensionWrapper::set_geometry_instance_transform(XrGeometryInstanceFB p_geometry_instance, const Transform3D &p_transform) {
-	Transform3D reference_frame = XRServer::get_singleton()->get_reference_frame();
-	Transform3D transform = reference_frame.inverse() * p_transform;
+    Transform3D reference_frame = XRServer::get_singleton()->get_reference_frame();
+    Transform3D transform = reference_frame.inverse() * p_transform;
 
-	Quaternion quat = transform.basis.get_rotation_quaternion();
-	Vector3 scale = transform.basis.get_scale();
+    Quaternion quat = transform.basis.get_rotation_quaternion();
+    Vector3 scale = transform.basis.get_scale();
 
-	XrQuaternionf xr_orientation = { quat.x, quat.y, quat.z, quat.w };
-	XrVector3f xr_position = { transform.origin.x, transform.origin.y, transform.origin.z };
-	XrPosef xr_pose = { xr_orientation, xr_position };
-	XrVector3f xr_scale = { scale.x, scale.y, scale.z };
+    XrQuaternionf xr_orientation = { 
+        static_cast<float>(quat.x), 
+        static_cast<float>(quat.y), 
+        static_cast<float>(quat.z), 
+        static_cast<float>(quat.w) 
+    };
+    XrVector3f xr_position = { 
+        static_cast<float>(transform.origin.x), 
+        static_cast<float>(transform.origin.y), 
+        static_cast<float>(transform.origin.z) 
+    };
+    XrPosef xr_pose = { xr_orientation, xr_position };
+    XrVector3f xr_scale = { 
+        static_cast<float>(scale.x), 
+        static_cast<float>(scale.y), 
+        static_cast<float>(scale.z) 
+    };
 
-	XrGeometryInstanceTransformFB xr_transform = {
-		XR_TYPE_GEOMETRY_INSTANCE_TRANSFORM_FB, // type
-		nullptr, // next
-		(XrSpace)get_openxr_api()->get_play_space(), // baseSpace
-		(XrTime)get_openxr_api()->get_predicted_display_time(), // time
-		xr_pose, // pose
-		xr_scale, // scale
-	};
+    XrGeometryInstanceTransformFB xr_transform = {
+        XR_TYPE_GEOMETRY_INSTANCE_TRANSFORM_FB, // type
+        nullptr, // next
+        reinterpret_cast<XrSpace>(get_openxr_api()->get_play_space()), // baseSpace (safer cast)
+        static_cast<XrTime>(get_openxr_api()->get_predicted_display_time()), // time
+        xr_pose, // pose
+        xr_scale, // scale
+    };
 
-	XrResult result = xrGeometryInstanceSetTransformFB(p_geometry_instance, &xr_transform);
-	if (XR_FAILED(result)) {
-		UtilityFunctions::print("Failed to set geometry instance transform, error code: ", result);
-	}
+    XrResult result = xrGeometryInstanceSetTransformFB(p_geometry_instance, &xr_transform);
+    if (XR_FAILED(result)) {
+        UtilityFunctions::print("Failed to set geometry instance transform, error code: ", result);
+    }
 }
 
 void OpenXRFbPassthroughExtensionWrapper::destroy_geometry_instance(XrGeometryInstanceFB p_geometry_instance) {
