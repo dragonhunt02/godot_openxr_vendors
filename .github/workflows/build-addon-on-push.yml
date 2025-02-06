@@ -4,7 +4,7 @@ name: Build on push
 on: [push, pull_request]
 
 env:
-  # Only used for the cache key. Increment version to force clean build.
+  # Only used for the cache key. Increment version to force clean build. 
   GODOT_BASE_BRANCH: master
 
 jobs:
