@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: Dump Godot API file
         run: |
+          dnf install -y zip unzip curl
           # Testing with a fixed editor version
           curl -OL https://github.com/V-Sekai/world-godot/releases/download/latest.v-sekai-editor-167/v-sekai-godot-linuxbsd.zip
           unzip v-sekai-godot-linuxbsd.zip
@@ -142,6 +143,7 @@ jobs:
       - name: Overwrite api files
         if: matrix.platform != 'windows'
         run: |
+          dnf install -y zip unzip curl
           # Is gdextension_interface.h overwrite required for double builds?
           mv -v -f ./godot-api-file/extension_api.json aar/thirdparty/godot_cpp_gdextension_api/extension_api.json
           # mv -v -f ./godot-api-file/gdextension_interface.h aar/thirdparty/godot-cpp/gdextension/gdextension_interface.h
