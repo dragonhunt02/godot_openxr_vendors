@@ -10,7 +10,7 @@ env:
 jobs:
   setup:
     name: Get Godot API file
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Dump Godot API file
         run: |
