@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Dump Godot API file
         run: |
-          dnf install -y zip unzip curl
+          dnf install -y zip unzip curl fontconfig
           # Testing with a fixed editor version
           curl -OL https://github.com/V-Sekai/world-godot/releases/download/latest.v-sekai-editor-167/v-sekai-godot-linuxbsd.zip
           unzip v-sekai-godot-linuxbsd.zip
@@ -107,6 +107,7 @@ jobs:
           path: aar
       - name: Initialize submodules
         run: |
+          dnf install -y git
           cd aar
           git submodule update --init
           cd ..
