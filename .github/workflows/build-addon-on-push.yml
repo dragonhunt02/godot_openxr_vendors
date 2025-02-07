@@ -101,16 +101,17 @@ jobs:
     # Note, to satisfy the asset library we need to make sure our zip files have a root folder
     # this is why we checkout into aar and build into asset
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          path: aar
+      #- name: Checkout
+      #  uses: actions/checkout@v4
+      #  with:
+      #    path: aar
       - name: Setup Fedora
         if: ${{ matrix.platform != 'windows' && matrix.platform != 'macos' }}
         run: |
           dnf install -y git zip unzip curl
       - name: Initialize submodules
         run: |
+          git clone https://github.com/dragonhunt02/godot_openxr_vendors.git aar
           cd aar
           git submodule update --init
           cd ..
