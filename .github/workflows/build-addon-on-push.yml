@@ -73,7 +73,6 @@ jobs:
             cache-name: windows-x86_64-msvc
           - name: 🍎 MacOS (universal)
             os: macos-latest
-            image: fedora:39
             platform: macos
             flags: arch=universal
             artifact_name: build-files-macos
@@ -106,7 +105,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: aar
-          submodules: recursive
+      - name: Initialize submodules
+        run: |
+          cd aar
+          git submodule update --init
+          cd ..
       - name: Set up Python (for SCons)
         uses: actions/setup-python@v5
         with:
