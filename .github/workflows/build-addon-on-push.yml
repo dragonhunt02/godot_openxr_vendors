@@ -106,12 +106,11 @@ jobs:
         with:
           path: aar
       - name: Setup Fedora
-        if: matrix.platform != 'windows' && matrix.platform != 'macos'
+        if: ${{ matrix.platform != 'windows' && matrix.platform != 'macos' }}
         run: |
           dnf install -y git zip unzip curl
       - name: Initialize submodules
         run: |
-          dnf install -y git
           cd aar
           git submodule update --init
           cd ..
