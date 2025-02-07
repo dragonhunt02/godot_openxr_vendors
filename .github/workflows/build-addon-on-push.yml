@@ -105,6 +105,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: aar
+      - name: Setup Fedora
+        if: matrix.platform != 'windows' && matrix.platform != 'macos'
+        run: |
+          dnf install -y git zip unzip curl
       - name: Initialize submodules
         run: |
           dnf install -y git
@@ -147,7 +151,6 @@ jobs:
       - name: Overwrite api files
         if: matrix.platform != 'windows'
         run: |
-          dnf install -y zip unzip curl
           # Is gdextension_interface.h overwrite required for double builds?
           mv -v -f ./godot-api-file/extension_api.json aar/thirdparty/godot_cpp_gdextension_api/extension_api.json
           # mv -v -f ./godot-api-file/gdextension_interface.h aar/thirdparty/godot-cpp/gdextension/gdextension_interface.h
