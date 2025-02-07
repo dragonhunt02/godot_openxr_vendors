@@ -11,6 +11,8 @@ jobs:
   setup:
     name: Get Godot API file
     runs-on: ubuntu-24.04
+    container:
+      image: fedora:39
     steps:
       - name: Dump Godot API file
         run: |
@@ -33,12 +35,15 @@ jobs:
     name: Building for ${{ matrix.name }} (${{ matrix.os }})
     needs: setup
     runs-on: ${{ matrix.os }}
+    container:
+      image: ${{ matrix.image }}
     strategy:
       fail-fast: true
       matrix:
         include:
           - name: 🐧 Linux (x86_64, GCC)
             os: ubuntu-24.04
+            image: fedora:39
             platform: linux
             flags: arch=x86_64
             artifact_name: build-files-linux-x86_64
@@ -67,6 +72,7 @@ jobs:
             cache-name: windows-x86_64-msvc
           - name: 🍎 MacOS (universal)
             os: macos-latest
+            image: fedora:39
             platform: macos
             flags: arch=universal
             artifact_name: build-files-macos
@@ -74,6 +80,7 @@ jobs:
             cache-name: macos-universal
           - name: 🤖 Android (arm64)
             os: ubuntu-24.04
+            image: fedora:39
             platform: android
             flags: arch=arm64
             artifact_name: build-files-android-arm64
@@ -82,6 +89,7 @@ jobs:
             cache-name: android-arm64
           - name: 🤖 Android (x86_64)
             os: ubuntu-24.04
+            image: fedora:39
             platform: android
             flags: arch=x86_64
             artifact_name: build-files-android-x86_64
@@ -160,6 +168,8 @@ jobs:
   asset:
     name: Assembling the asset
     runs-on: ubuntu-24.04
+    container:
+      image: fedora:39
     needs: build
 
     steps:
