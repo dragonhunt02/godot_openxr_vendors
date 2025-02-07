@@ -196,6 +196,9 @@ jobs:
         with:
           java-version: 17
           distribution: "adopt"
+      - name: Setup Fedora
+        run: |
+          dnf install -y git zip unzip curl gcc gcc-c++ libstdc++-static libatomic-static
       - name: Install ndk
         run: |
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk/
