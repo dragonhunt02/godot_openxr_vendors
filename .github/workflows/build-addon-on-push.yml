@@ -108,7 +108,7 @@ jobs:
       - name: Setup Fedora
         if: ${{ matrix.platform != 'windows' && matrix.platform != 'macos' }}
         run: |
-          dnf install -y git zip unzip curl
+          dnf install -y git zip unzip curl gcc gcc-c++
       - name: Initialize submodules
         run: |
           git clone https://github.com/dragonhunt02/godot_openxr_vendors.git aar
