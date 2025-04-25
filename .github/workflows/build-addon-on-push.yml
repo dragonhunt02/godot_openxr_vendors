@@ -6,7 +6,7 @@ on:
   repository_dispatch:
     types: ['build-ready']
   push:
-    branches: ['main']
+    branches: ['build-test']
 
 env:
   # Only used for the cache key. Increment version to force clean build.
