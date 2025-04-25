@@ -14,8 +14,8 @@ jobs:
     steps:
       - name: Dump Godot API file
         run: |
-          GODOT_REPO=V-Sekai/world-godot
-          GODOT_ZIP=v-sekai-godot-linuxbsd.zip
+          export GODOT_REPO=V-Sekai/world-godot
+          export GODOT_ZIP=v-sekai-godot-linuxbsd.zip
           
           curl -v -sS -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${GODOT_REPO}/releases" \
