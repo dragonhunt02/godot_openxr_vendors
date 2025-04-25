@@ -208,7 +208,7 @@ jobs:
       - name: Adding vendor licences
         run: |
           mkdir -p asset/addons/godotopenxrvendors/meta/
-          cp aar/thirdparty/ovr_openxr_mobile_sdk/LICENSE.txt asset/addons/godotopenxrvendors/meta/
+          cp aar/thirdparty/khronos_openxr_sdk/LICENSE asset/addons/godotopenxrvendors/meta/LICENSE
 
           mkdir -p asset/addons/godotopenxrvendors/pico/
           cp aar/thirdparty/khronos_openxr_sdk/LICENSE asset/addons/godotopenxrvendors/pico/LICENSE
@@ -250,10 +250,10 @@ jobs:
       - name: Zip addon
         run: |
           zip -qq -r godotopenxrvendorsaddon.zip asset
-        if: github.event_name == 'push'
-        # && startsWith(github.ref, 'refs/tags')
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
 
       - name: Create Release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -265,6 +265,7 @@ jobs:
           prerelease: true
 
       - name: Upload Release Asset
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
