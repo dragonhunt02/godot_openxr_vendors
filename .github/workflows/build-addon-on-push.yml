@@ -256,9 +256,13 @@ jobs:
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: asset
+          name: GodotOpenXRVendorsAddon
 
       - name: Zip addon
         run: |
+          ls -R asset
           zip -qq -r godotopenxrvendorsaddon.zip asset
 
       - name: Create Release
