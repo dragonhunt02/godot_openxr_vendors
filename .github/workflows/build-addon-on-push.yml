@@ -14,9 +14,24 @@ jobs:
     steps:
       - name: Dump Godot API file
         run: |
-          # Testing with a fixed editor version
-          curl -OL https://github.com/V-Sekai/world-godot/releases/download/latest.v-sekai-editor-167/v-sekai-godot-linuxbsd.zip
-          unzip v-sekai-godot-linuxbsd.zip
+          GODOT_REPO='V-Sekai/world-godot'
+          GODOT_ZIP='v-sekai-godot-linuxbsd.zip'
+          
+          curl -sS \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GODOT_REPO}/releases" \
+            | jq -r '.[0]' > godot_editor_json.txt
+          
+          FILE_URL=$( \
+            cat 'godot_editor_json.txt' \
+            | jq -r '.assets.[] | select(.name == env.GODOT_ZIP).browser_download_url' \
+          )
+          
+          echo "Downloading ${FILE_URL}" \
+          && curl -OL --url ${FILE_URL} \
+          && echo "Downloaded ${GODOT_ZIP%.*} archive. Unzipping..." \
+          && unzip ${GODOT_ZIP}
+
           chmod +x ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64
           ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64 --headless --dump-extension-api
           ./v-sekai-godot-linuxbsd/godot.linuxbsd.editor.double.x86_64 --headless --dump-gdextension-interface
