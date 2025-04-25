@@ -17,8 +17,7 @@ jobs:
           GODOT_REPO='V-Sekai/world-godot'
           GODOT_ZIP='v-sekai-godot-linuxbsd.zip'
           
-          curl -sS \
-            -H "Accept: application/vnd.github+json" \
+          curl -sS -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${GODOT_REPO}/releases" \
             | jq -r '.[0]' > godot_editor_json.txt
           
