@@ -247,25 +247,32 @@ jobs:
           include-hidden-files: true
           path: |
             asset
+  
+  release:
+    name: Release XR plugin
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/master-test')
+    needs: asset
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
       - name: Zip addon
         run: |
           zip -qq -r godotopenxrvendorsaddon.zip asset
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
 
       - name: Create Release
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: XR-plugin-${{ github.run_number }}
-          release_name: Latest Release of V-Sekai XR plugin
+          release_name: Latest Release of V-Sekai XR vendors plugin
           draft: false
           prerelease: true
 
       - name: Upload Release Asset
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
