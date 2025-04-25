@@ -1,7 +1,12 @@
 # Workflow to automatically create the godot openxr loaders addon
 name: Build on push
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: ['build-ready']
+  push:
+    branches: ['main']
 
 env:
   # Only used for the cache key. Increment version to force clean build.
@@ -10,7 +15,7 @@ env:
 jobs:
   setup:
     name: Get Godot API file
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Dump Godot API file
         run: |
@@ -53,7 +58,7 @@ jobs:
       matrix:
         include:
           - name: 🐧 Linux (x86_64, GCC)
-            os: ubuntu-24.04
+            os: ubuntu-22.04
             platform: linux
             flags: arch=x86_64
             artifact_name: build-files-linux-x86_64
@@ -88,7 +93,7 @@ jobs:
             artifact_path: aar/demo/addons/godotopenxrvendors/.bin/macos/*/*.framework
             cache-name: macos-universal
           - name: 🤖 Android (arm64)
-            os: ubuntu-24.04
+            os: ubuntu-22.04
             platform: android
             flags: arch=arm64
             artifact_name: build-files-android-arm64
@@ -96,7 +101,7 @@ jobs:
               aar/plugin/src/main/libs/*/*/*/*.so
             cache-name: android-arm64
           - name: 🤖 Android (x86_64)
-            os: ubuntu-24.04
+            os: ubuntu-22.04
             platform: android
             flags: arch=x86_64
             artifact_name: build-files-android-x86_64
@@ -169,7 +174,7 @@ jobs:
 
   asset:
     name: Assembling the asset
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: build
 
     steps:
