@@ -234,8 +234,8 @@ jobs:
           #stripdown: true
 
           # You can install a software rasterizer.
-          #install_swiftshader: true
-          install_lavapipe: true
+          install_swiftshader: true
+          #install_lavapipe: true
           
       - name: Install Chocolatey
         run: |
