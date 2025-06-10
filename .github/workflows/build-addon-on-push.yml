@@ -214,7 +214,7 @@ jobs:
 
    env:
      GODOT_VERSION: "4.4.1-stable"
-     XRSIM_VERSION: "65.0.0"
+     XRSIM_VERSION: "71.0.0"
 
    steps:
       - name: Checkout code
@@ -260,7 +260,7 @@ jobs:
         run: |
           brew tap Oculus-VR/tap
           brew install meta-xr-simulator
-          sudo sh /opt/homebrew/Cellar/meta-xr-simulator/__VERSION__/post_installation_macos.sh
+          sudo sh /opt/homebrew/Cellar/meta-xr-simulator/$XRSIM_VERSION/post_installation_macos.sh
           brew info meta-xr-simulator
 
       - name: Download macos build artifacts
@@ -280,7 +280,7 @@ jobs:
 
       - name: Import the demo and sample projects
         run: |
-          godot="Godot_v${GODOT_VERSION}_macos.universal"
+          godot="Godot.app/Contents/MacOS/Godot"
           echo ""
           echo " ** Importing demo project"
           echo ""
@@ -300,7 +300,7 @@ jobs:
       - name: Launch a synthetic environment
         run: |
           # Ensure a synthetic environment isn't already running.
-          /opt/homebrew/Cellar/meta-xr-simulator/__VERSION__/synth_env_server/LaunchLivingRoom.sh
+          sh /opt/homebrew/Cellar/meta-xr-simulator/$XRSIM_VERSION/synth_env_server/LaunchLivingRoom.sh
 
       - name: Run tests
         run: |
