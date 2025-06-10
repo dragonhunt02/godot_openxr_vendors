@@ -260,7 +260,7 @@ jobs:
         run: |
           brew tap Oculus-VR/tap
           brew install meta-xr-simulator
-          sudo /opt/homebrew/Cellar/meta-xr-simulator/__VERSION__/post_installation_macos.sh
+          sudo sh /opt/homebrew/Cellar/meta-xr-simulator/__VERSION__/post_installation_macos.sh
           brew info meta-xr-simulator
 
       - name: Download macos build artifacts
