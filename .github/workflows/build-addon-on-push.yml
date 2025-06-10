@@ -204,7 +204,7 @@ jobs:
           omitDraftDuringUpdate: true
           omitPrereleaseDuringUpdate: true
           token: ${{ secrets.GITHUB_TOKEN }}
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        if: github.event_name == 'pushhing' && startsWith(github.ref, 'refs/tags')
 
   run_xr_simulator:
    name: "Run XR Simulator"
