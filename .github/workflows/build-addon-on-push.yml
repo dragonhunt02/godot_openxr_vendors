@@ -229,7 +229,7 @@ jobs:
           # Defaults to latest version, if version not set.
           #vulkan_version: 1.3.231.2
           optional_components: com.lunarg.vulkan.vma,com.lunarg.vulkan.32bit,com.lunarg.vulkan.sdl2,com.lunarg.vulkan.glm,com.lunarg.vulkan.volk #,com.lunarg.vulkan.debug32,com.lunarg.vulkan.thirdparty,com.lunarg.vulkan.debug
-          install_runtime: true
+          #install_runtime: true
           cache: true
           stripdown: true
 
