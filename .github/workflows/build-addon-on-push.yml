@@ -209,7 +209,7 @@ jobs:
   run_xr_simulator:
    name: "Run XR Simulator"
    #runs-on: windows-latest
-   runs-on: windows-11-arm
+   runs-on: macos-latest
    needs: build
 
    env:
@@ -237,21 +237,19 @@ jobs:
           install_swiftshader: true
           install_lavapipe: true
           
-      - name: Install Chocolatey
-        run: |
-          Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-
       - name: Install 7zip
         run: |
-          choco install 7zip -y
+          brew update -y
+          brew install 7zip tree -y
 
       - name: Download Godot
         run: |
-          Invoke-WebRequest -Uri "https://github.com/godotengine/godot-builds/releases/download/${{ env.GODOT_VERSION }}/Godot_v${{ env.GODOT_VERSION }}_win64.exe.zip" -OutFile "godot.zip"
+          curl -o godot.zip -L "https://github.com/godotengine/godot-builds/releases/download/${{ env.GODOT_VERSION }}/Godot_v${{ env.GODOT_VERSION }}_macos.universal.zip"
 
       - name: Extract Godot
         run: |
-          Expand-Archive -Path "godot.zip" -DestinationPath .
+          unzip "godot.zip"
+          tree
 
       #- name: Download SwiftShader vulkan-1.dll
       #  run: |
@@ -259,130 +257,130 @@ jobs:
 
       - name: Download Meta XR Simulator
         run: |
-          Invoke-WebRequest -Uri "https://npm.developer.oculus.com/com.meta.xr.simulator/-/com.meta.xr.simulator-${{ env.XRSIM_VERSION }}.tgz" -OutFile MetaXRSimulator.tgz
+          brew tap Oculus-VR/tap
+          brew install meta-xr-simulator
+          sudo /opt/homebrew/Cellar/meta-xr-simulator/__VERSION__/post_installation_macos.sh
+          brew info meta-xr-simulator
 
-      - name: Extract Meta XR Simulator
-        run: |
-          # Unzip.
-          New-Item -Path "C:\Meta" -ItemType Directory -Force
-          tar -xzvf "MetaXRSimulator.tgz" -C "C:\Meta\"
-          rm "MetaXRSimulator.tgz"
-
-      - name: Configure the Meta XR Simulator as the active OpenXR runtime
-        run: |
-          New-Item -Path "HKLM:\SOFTWARE\Khronos\OpenXR\1" -Name "ActiveRuntime" -Force
-          Set-ItemProperty -Path "HKLM:\SOFTWARE\Khronos\OpenXR\1" -Name "ActiveRuntime" -Value "C:\Meta\package\MetaXRSimulator\meta_openxr_simulator.json"
-
-      - name: Download Windows build artifacts
+      - name: Download macos build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-files-windows
-          path: build-files-windows
+          name: build-files-macos
+          path: build-files-macos
 
       - name: Copy Windows build of the addon into the demo and samples project
         run: |
-          mkdir -p demo/addons/godotopenxrvendors/.bin/windows/
-          cp -r build-files-windows/* demo/addons/godotopenxrvendors/.bin/windows/
+          mkdir -p demo/addons/godotopenxrvendors/.bin/macos/
+          cp -r build-files-macos/* demo/addons/godotopenxrvendors/.bin/macos/
 
-          $sampleProjects = Get-ChildItem -Path "samples/" -Directory
-          foreach ($project in $sampleProjects) {
-            cp -r demo/addons "$($project.FullName)/"
-          }
+          for project in samples/*/; do
+            cp -r demo/addons "$project"
+          done
 
       - name: Import the demo and sample projects
         run: |
-          $godot = "Godot_v${{ env.GODOT_VERSION }}_win64.exe"
+          godot="Godot_v${GODOT_VERSION}_macos.universal"
+          echo ""
+          echo " ** Importing demo project"
+          echo ""
 
-          Write-Output ""
-          Write-Output " ** Importing demo project"
-          Write-Output ""
+          "$godot" --path demo --import --headless
 
-          Start-Process -FilePath "$godot" -ArgumentList "--path demo --import --headless" -NoNewWindow -Wait
-
-          $sampleProjects = Get-ChildItem -Path "samples/" -Directory
-          foreach ($project in $sampleProjects) {
-            $projectFile = Join-Path -Path $project.FullName -ChildPath "project.godot"
-              if (Test-Path $projectFile) {
-              Write-Output ""
-              Write-Output " ** Importing project $($project.Name)"
-              Write-Output ""
-
-              Start-Process -FilePath "$godot" -ArgumentList "--path $($project.FullName) --import --headless" -NoNewWindow -Wait
-            }
-          }
+          for project in samples/*/; do
+            project_file="${project}project.godot"
+            if [ -f "$project_file" ]; then
+              echo ""
+              echo " ** Importing project $(basename "$project")"
+              echo ""
+              "$godot" --path "$project" --import --headless
+            fi
+          done
 
       - name: Launch a synthetic environment
         run: |
           # Ensure a synthetic environment isn't already running.
-          try {
-            Get-Process -Name "synth_env_server" | Stop-Process
-          } catch {
-            # Do nothing if there is no existing process.
-          }
-
-          Start-Process -FilePath "C:\Meta\package\MetaXRSimulator\.synth_env_server\synth_env_server.exe" -ArgumentList "Bedroom" -PassThru
+          /opt/homebrew/Cellar/meta-xr-simulator/__VERSION__/synth_env_server/LaunchLivingRoom.sh
 
       - name: Run tests
         run: |
-          $jsonPath = "$env:AppData\MetaXR\MetaXrSimulator\persistent_data.json"
+          
+          jsonPath="$HOME/Library/Application Support/MetaXR/MetaXrSimulator/persistent_data.json"
 
-          $demoVrsFiles = Get-ChildItem -Path "demo/tests/" -Recurse -Filter *.vrs
-          $sampleVrsFiles = Get-ChildItem -Path "samples/*/tests/" -Recurse -Filter *.vrs
-          $vrsFiles = @()
-          $vrsFiles += $demoVrsFiles
-          $vrsFiles += $sampleVrsFiles
+          # Find .vrs files in demo/tests and samples/*/tests directories.
+          demoVrsFiles=( $(find demo/tests -type f -name "*.vrs") )
+          sampleVrsFiles=( $(find samples -type f -path "*/tests/*.vrs") )
+          # Combine both arrays into one.
+          vrsFiles=( "${demoVrsFiles[@]}" "${sampleVrsFiles[@]}" )
 
-          foreach ($file in $vrsFiles) {
-            $replayPath = Join-Path -Path $file.DirectoryName -ChildPath ($file.BaseName + "-replay.vrs")
-            $jsonContent = @{
-              session_capture = @{
-                delay_start_ms = 5000
-                exec_state = "replay"
-                quit_buffer_ms = 5000
-                quit_when_complete = $true
-                record_path = $file.FullName
-                replay_path = $replayPath
-              }
-            } | ConvertTo-Json
-
-            New-Item -ItemType Directory -Force -Path (Split-Path $jsonPath)
-            Set-Content -Path $jsonPath -Value $jsonContent
-            echo "$jsonContent"
-
-            $godot = "Godot_v${{ env.GODOT_VERSION }}_win64.exe"
-            $timeout = 300
-            $waitTime = 0
-
-            $projectPath = (Get-Item $file.DirectoryName).Parent
-
-            Write-Output ""
-            Write-Output " ** Running VRS $($file.Name) on $($projectPath.Name) project"
-            Write-Output ""
-
-            $process = Start-Process -FilePath "$godot" -ArgumentList "--path $($projectPath.FullName) --rendering-method mobile --verbose -- --xrsim-automated-tests" -NoNewWindow -PassThru
-
-            while ($process.HasExited -eq $false -and $waitTime -lt $timeout) {
-                Start-Sleep -Seconds 1
-                $waitTime++
-            }
-
-            if ($process.HasExited -eq $false) {
-                Write-Output "Process is still running after $timeout seconds. Stopping the process."
-                $process.Kill()
-                Exit 1
-            } else {
-                Write-Output "Process completed within $waitTime seconds."
-            }
-
-            if (-Not (Test-Path $replayPath)) {
-              Write-Error "Replay file not found: $replayPath"
-              Exit 1
+          for file in "${vrsFiles[@]}"; do
+            # Compute the replay file path by appending '-replay' to the base name.
+            dir=$(dirname "$file")
+            base=$(basename "$file" .vrs)
+            replayPath="${dir}/${base}-replay.vrs"
+  
+            # Construct the JSON content.
+            jsonContent=$(cat <<EOF
+          {
+            "session_capture": {
+              "delay_start_ms": 5000,
+              "exec_state": "replay",
+              "quit_buffer_ms": 5000,
+              "quit_when_complete": true,
+              "record_path": "$(readlink -f "$file")",
+              "replay_path": "$(readlink -f "$replayPath")"
             }
           }
+          EOF
+          )
+            # Create the directory for the JSON file, then write the content.
+            mkdir -p "$(dirname "$jsonPath")"
+            echo "$jsonContent" > "$jsonPath"
+            echo "$jsonContent"
+  
+            # Define the Godot executable.
+            # Adjust the executable name as needed. For Linux you might have something like:
+            #   godot="Godot_v${GODOT_VERSION}_linux.x86_64"
+            # Here we assume the naming is similar to the given one.
+            godot="Godot_v${GODOT_VERSION}_macos.universal"
+  
+            timeout=300
+            waitTime=0
+
+            # Determine the project path which is the parent directory of the .vrs file's directory.
+            projectPath=$(dirname "$(dirname "$file")")
+
+            echo ""
+            echo " ** Running VRS $(basename "$file") on $(basename "$projectPath") project"
+            echo ""
+
+            # Start the Godot process in background.
+            "$godot" --path "$projectPath" --rendering-method mobile --verbose -- --xrsim-automated-tests &
+            pid=$!
+
+            # Wait for the process to complete, but with a timeout.
+            while kill -0 "$pid" 2>/dev/null && [ $waitTime -lt $timeout ]; do
+              sleep 1
+              waitTime=$((waitTime+1))
+            done
+
+            if kill -0 "$pid" 2>/dev/null; then
+              echo "Process is still running after $timeout seconds. Stopping the process."
+              kill "$pid"
+              exit 1
+            else
+              echo "Process completed within $waitTime seconds."
+            fi
+
+            # Check that the replay file was generated.
+            if [ ! -f "$replayPath" ]; then
+              echo "Replay file not found: $replayPath" >&2
+              exit 1
+            fi
+          done
 
       - name: Stop synthetic environment
         run: |
-          Get-Process -Name "synth_env_server" | Stop-Process
+          pkill synth_env_server
 
       - name: Upload VRS artifacts
         uses: actions/upload-artifact@v4
