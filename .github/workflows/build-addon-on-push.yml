@@ -300,11 +300,15 @@ jobs:
       - name: Launch a synthetic environment
         run: |
           # Ensure a synthetic environment isn't already running.
+          tree -a /opt/homebrew/Cellar/meta-xr-simulator/$XRSIM_VERSION/synth_env_server/
           sh /opt/homebrew/Cellar/meta-xr-simulator/$XRSIM_VERSION/synth_env_server/LaunchLivingRoom.sh
 
       - name: Run tests
         run: |
-          
+          tree -a /usr/local/share/openxr/
+          echo ""
+          tree -a "$HOME/Library/Application Support/MetaXR/MetaXrSimulator" || true
+          echo ""
           jsonPath="$HOME/Library/Application Support/MetaXR/MetaXrSimulator/persistent_data.json"
 
           # Find .vrs files in demo/tests and samples/*/tests directories.
@@ -342,7 +346,7 @@ jobs:
             # Adjust the executable name as needed. For Linux you might have something like:
             #   godot="Godot_v${GODOT_VERSION}_linux.x86_64"
             # Here we assume the naming is similar to the given one.
-            godot="Godot_v${GODOT_VERSION}_macos.universal"
+            godot="Godot.app/Contents/MacOS/Godot"
   
             timeout=300
             waitTime=0
