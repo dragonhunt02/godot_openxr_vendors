@@ -240,8 +240,8 @@ jobs:
           
       - name: Install 7zip
         run: |
-          brew update -y
-          brew install 7zip tree -y
+          brew update
+          brew install 7zip tree
 
       - name: Download Godot
         run: |
