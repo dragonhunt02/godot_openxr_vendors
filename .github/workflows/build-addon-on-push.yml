@@ -209,7 +209,7 @@ jobs:
   run_xr_simulator:
    name: "Run XR Simulator"
    #runs-on: windows-latest
-   runs-on: windows-11-arm
+   runs-on: windows-2025
    needs: build
 
    env:
