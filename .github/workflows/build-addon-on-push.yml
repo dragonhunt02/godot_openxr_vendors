@@ -224,6 +224,14 @@ jobs:
           
       - name: Install Chocolatey
         run: |
+          $progressPreference = 'silentlyContinue'
+          Write-Host "Installing WinGet PowerShell module from PSGallery..."
+          Install-PackageProvider -Name NuGet -Force
+          Install-Module -Name Microsoft.WinGet.Client -Force -Repository PSGallery
+          Write-Host "Using Repair-WinGetPackageManager cmdlet to bootstrap WinGet..."
+          Repair-WinGetPackageManager
+          Write-Host "Done."
+          winget -v
           winget install --id 9nqpsl29bfff --accept-source-agreements --accept-package-agreements
 
       - name: Install Vulkan SDK
