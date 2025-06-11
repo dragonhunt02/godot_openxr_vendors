@@ -222,6 +222,10 @@ jobs:
         with:
           lfs: 'true'
           
+      - name: Install Chocolatey
+        run: |
+          winget install --id 9nqpsl29bfff --accept-source-agreements --accept-package-agreements
+
       - name: Install Vulkan SDK
         uses: jakoch/install-vulkan-sdk-action@v1
         with:
